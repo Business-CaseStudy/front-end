@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SidebarComp from '../../components/Navbar/SidebarComp'
-import { Table } from 'reactstrap';
+import { Card, CardTitle, Table } from 'reactstrap';
 import api from '../../api';
 
 export default function BillList() {
@@ -23,12 +23,17 @@ export default function BillList() {
     <>
        <div style={{ display: 'flex' }}>  
     <SidebarComp />
+    <div className="container">
+                <div style={{ flex: 1, padding: '20px' }}>
+                <Card>
+                                <Card body>
+                                <CardTitle tag="h5"> Group Bills by Investor</CardTitle>
     <div style={{ flex: 1, padding: '20px' }}>
-    <div>BillList</div>
+   
     <Table bordered>
                     <thead>
                         <tr>
-                            <th>#</th>
+                          
                             <th>investor name</th>
                             <th>investor IBAN</th>
                             <th>Total Amount</th>
@@ -41,11 +46,9 @@ export default function BillList() {
                     <tbody>
                         {data?.map(item => (
                             <tr
-                                // key={investor.id}
-                                // onClick={() => handleRowClick(investor)}
-                                // style={{ cursor: 'pointer', backgroundColor: selectedInvestor?.id === investor.id ? '#e9ecef' : '' }}
+                            
                             >
-                                <th scope="row"></th>
+                               
                                 <td>{item.investor_name}</td>
                                 <td>{item.investor_iban}</td>
                                 <td>{item.total_amount}</td>
@@ -53,13 +56,15 @@ export default function BillList() {
                                 <td>{item.pending_count}</td>
                                 <td>{item.validated_count}</td>
                                 <td>{item.paid_count}</td>
-                                <td>
-                                    {/* {selectedInvestor?.id === investor.id ? 'Selected' : ''} */}
-                                </td>
+                               
                             </tr>
                         ))}
                     </tbody>
                 </Table>
+    </div>
+    </Card>
+    </Card>
+    </div>
     </div>
     </div>
     </>

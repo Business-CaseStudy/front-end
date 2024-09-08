@@ -4,6 +4,7 @@ import {  useParams } from 'react-router-dom';
 import api from '../../api';
 import { FaEdit } from 'react-icons/fa';
 import { Badge, Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { FiSend } from 'react-icons/fi';
 
 const getStatusColor2 = (status) => {
     switch (status) {
@@ -19,7 +20,7 @@ const getStatusColor2 = (status) => {
             return 'danger'; // Grey badge for any other status
     }
 };
-export default function CapitalCallList() {
+export default function CapitalCallList({refreshTrigger }) {
     const [capitalcalls, setCapitalcalls] = useState([]);
     const [selectedCapitalCall, setSelectedCapitalCall] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -71,25 +72,20 @@ export default function CapitalCallList() {
     <Table bordered className="text-center">
         <thead>
             <tr>
-                <th className="align-middle">Select</th>
+                {/* <th className="align-middle">Select</th> */}
                 <th className="align-middle">Reference</th>
                 <th className="align-middle">total amount</th>
                 <th className="align-middle">capital call STATUS</th>
                 <th className="align-middle">Bills</th>
                 <th className="align-middle">CREATED DATE</th>
                 <th className="align-middle">CHANGE STATUS</th>
+                <th className="align-middle">SEND EMAIL</th>
             </tr>
         </thead>
         <tbody>
             {capitalcalls?.map(data => (
                 <tr key={data.id}>
-                    <td>
-                        <input
-                            type="checkbox"
-                            value={data.id}
-                            //={(e) => handleCheckboxChange(e, bill)}
-                        />
-                    </td>
+                   
                     <th scope="row">{data.id}</th>
                     <td>{data.total_amount}</td>
                    
@@ -134,6 +130,9 @@ export default function CapitalCallList() {
                     <td>{data.created_date.split('T')[0]}</td>
                     <td onClick={() => openEditModal(data)} style={{ cursor: 'pointer' }}>
                                                 <FaEdit />
+                    </td>
+                    <td>
+                    <FiSend />
                     </td>
                 </tr>
             ))}

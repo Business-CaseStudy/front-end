@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Card, CardTitle } from 'reactstrap';
 import SidebarComp from '../../components/Navbar/SidebarComp';
 import api from '../../api';
 import GenerateBillForm from '../../components/Bill/GenerateBillForm';
@@ -19,8 +19,11 @@ export default function InvestorList() {
             .catch(error => console.error('Error fetching investors:', error));
     }, []);
 
+
+
     const handleRadioChange = (investor) => {
         setSelectedInvestor(investor);
+        //setSelectedInvestor(prevId => prevId === investor.id ? null : investor.id);
     };
 
     const toggleModal = () => {
@@ -46,6 +49,10 @@ export default function InvestorList() {
             <div style={{ display: 'flex' }}>  
                 <SidebarComp />
                 <div className="container">
+                <div style={{ flex: 1, padding: '20px' }}>
+                <Card>
+                                <Card body>
+                                <CardTitle tag="h5">Inverstor List</CardTitle>
                     <div className="table-responsive" style={{ flex:1  , padding: '20px' }}>
                         <Table  bordered className="text-center">
                             <thead>
@@ -55,22 +62,22 @@ export default function InvestorList() {
                                     <th>Username</th>
                                     <th>Email</th>
                                     <th>IBAN</th>
-                                    <th>Investment Amount</th>
-                                    <th>Investment Date</th>
+                                    {/* <th>Investment Amount</th>
+                                    <th>Investment Date</th> */}
                                 </tr>
                             </thead>
                             <tbody>
                                 {investors.map(investor => (
                                     <tr key={investor.id}>
-                                        <td>
-                                            <input
-                                                type="radio"
-                                                name="investor"
-                                                value={investor.id}
-                                                checked={selectedInvestor?.id === investor.id}
-                                                onChange={() => handleRadioChange(investor)}
-                                            />
-                                        </td>
+                                      <td>
+                            <input
+                                type="radio"
+                                name="investor"
+                                value={investor.id}
+                                checked={selectedInvestor?.id === investor.id}
+                                onChange={() => handleRadioChange(investor)}
+                            />
+                        </td>
                                         {/* <th scope="row">{investor.id}</th> */}
                                         <td>
                                             <Button color="link" onClick={() => handleUsernameClick(investor.id)}>
@@ -79,20 +86,24 @@ export default function InvestorList() {
                                         </td>
                                         <td>{investor.email}</td>
                                         <td>{investor.iban}</td>
-                                        <td>{investor.investment_amount}</td>
-                                        <td>{investor.investment_date}</td>
+                                        {/* <td>{investor.investment_amount}</td>
+                                        <td>{investor.investment_date}</td> */}
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
+                        <Card footer>
                         <Button color="primary" onClick={handleGenerateBill} disabled={!selectedInvestor}>
                         <RiAiGenerate />  Generate Bill
                         </Button>
+                        </Card>
+                        
+                    </div>
+                    </Card>
+                    </Card>
                     </div>
                 </div>
             </div>
-
-            {/* Modal for generating bill */}
             <GenerateBillForm
                 isOpen={modalOpen}
                 toggle={toggleModal}

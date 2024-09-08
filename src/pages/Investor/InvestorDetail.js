@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Badge, Button, Card, CardText, CardTitle, Col, Row, Table, Alert } from 'reactstrap';
+import { Badge, Button, Card, CardText, CardTitle, Col, Row, Table, Alert, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SidebarComp from '../../components/Navbar/SidebarComp';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
 import { ButtonGroup } from 'react-bootstrap';
 import CapitalCallInfo from '../../components/CapitalCall/CapitalCallInfo';
 import CapitalCallList from '../../components/CapitalCall/CapitalCallList';
+import { RiAiGenerate } from 'react-icons/ri';
+
 const getStatusColor = (status) => {
     switch (status) {
         case 'pending':
-            return 'warning'; // Yellow badge
+            return 'warning';
         case 'validated':
-            return 'success'; // Green badge
+            return 'success'; 
         case 'paid':
-            return 'primary'; // Blue badge
+            return 'primary'; 
         case 'sent':
-            return 'secondary'; // Blue badge
+            return 'secondary'; 
         default:
-            return 'danger'; // Grey badge for any other status
+            return 'danger'; 
     }
 };
 
@@ -28,8 +30,16 @@ export default function InvestorDetail() {
     const [showValidateButton, setShowValidateButton] = useState(false);
     const [alert, setAlert] = useState(null);
     const [done, setDone] = useState(false);
-    const[generatedCapital,setGeneratedCapital] = useState([]);
-    const[capitalDone,setCapitalDone] = useState(false);
+    const [generatedCapital, setGeneratedCapital] = useState([]);
+    const [capitalDone, setCapitalDone] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [billsPerPage] = useState(10); // Number of bills per page
+
+    const toggleModal = () => {
+        setModalOpen(!modalOpen);
+    };
+
     const handleCheckboxChange = (e, bill) => {
         const updatedSelectedBills = e.target.checked 
             ? [...selectedBills, bill] 
@@ -37,7 +47,6 @@ export default function InvestorDetail() {
         
         setSelectedBills(updatedSelectedBills);
 
-        // Check if any selected bill has a status other than 'validated'
         const hasUnvalidatedBill = updatedSelectedBills.some(selectedBill => selectedBill.bill_status !== 'validated');
         setShowValidateButton(hasUnvalidatedBill);
     };
@@ -57,35 +66,48 @@ export default function InvestorDetail() {
                     )
                 });
                 setDone(true);
-                setSelectedBills([]); // Clear selected bills after validation
+                setSelectedBills([]);
                 setShowValidateButton(false);
             })
             .catch(error => {
                 const errorMessage = error.response?.data?.errors?.join(', ') || 'An error occurred while validating bills.';
                 setAlert({ type: 'danger', message: errorMessage });
+                setSelectedBills([]);
             });
     };
-    const hasValidatedBills = selectedBills.some(bill => bill.bill_status === 'validated');
-    const handleGenerateCapitalCall =async () => {
-        try {
-          console.log('Generating capital call for bills:', selectedBills);
-          const billIds = selectedBills.map(bill => bill.id);
-          const response = await api.post(`/capitalcall/generate-capital-call/${id}/`, { bill_ids: billIds }); 
-          console.log(response.data); // capital call data
-          setGeneratedCapital(response.data)
-          setCapitalDone(true)
-          setAlert({ type: 'success', message: 'Capital call generated successfully.' });
-        } catch (error) {
-          console.error('Error generating bill:', error);
-          setAlert({ type: 'danger', message: error.response.data.detail });
-        } 
 
+    const hasValidatedBills = selectedBills.some(bill => bill.bill_status === 'validated');
+
+    const handleGenerateCapitalCall = async () => {
+        try {
+            console.log('Generating capital call for bills:', selectedBills);
+            const billIds = selectedBills.map(bill => bill.id);
+            const response = await api.post(`/capitalcall/generate-capital-call/${id}/`, { bill_ids: billIds });
+            console.log(response.data);
+            setGeneratedCapital(response.data);
+            setCapitalDone(true);
+            setAlert({ type: 'success', message: 'Capital call generated successfully.' });
+            toggleModal();
+            setSelectedBills([]);
+        } catch (error) {
+            console.error('Error generating bill:', error);
+            setAlert({ type: 'danger', message: error.response.data.detail });
+            setSelectedBills([]);
+        }
     };
+
     useEffect(() => {
         api.get(`/bill/investor/${id}/bills/`)
             .then(response => setInvestor(response.data))
             .catch(error => console.error('Error fetching investor details:', error));
-    }, [id,done,capitalDone]);
+    }, [id, done, capitalDone]);
+
+    // Pagination logic
+    const indexOfLastBill = currentPage * billsPerPage;
+    const indexOfFirstBill = indexOfLastBill - billsPerPage;
+    const currentBills = investor?.bills?.slice(indexOfFirstBill, indexOfLastBill);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <>
@@ -109,7 +131,7 @@ export default function InvestorDetail() {
                             <Col sm="6">
                                 <Card body>
                                     <CardTitle tag="h5">Investment Amount</CardTitle>
-                                    <CardText>{investor?.investment_amount}£</CardText>
+                                    {/* <CardText>{investor?.investment_amount}£</CardText> */}
                                 </Card>
                             </Col>
                         </Row>
@@ -118,12 +140,25 @@ export default function InvestorDetail() {
                    
 
                         <div style={{ flex: 1, padding: '20px' }}>
-                            
-                            
+                             
                                 <Card>
                                 <Card body>
                                 <CardTitle tag="h5">Bill List</CardTitle>
                                 <div className="table-responsive">
+                                <ButtonGroup className="my-2">
+                                
+
+                                {showValidateButton && (
+                                    <Button color="primary" onClick={handleValidateBills}>
+                                        Validate Bill(s)
+                                    </Button>
+                                )}
+                                {hasValidatedBills && (
+                                    <Button color="primary" onClick={handleGenerateCapitalCall}>
+                                       <RiAiGenerate />  Generate Capital Call
+                                    </Button>
+                                )}
+                          </ButtonGroup>
                                 <Table bordered className="text-center">
                                     <thead>
                                         <tr>
@@ -137,7 +172,7 @@ export default function InvestorDetail() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {investor?.bills?.map(bill => (
+                                        {currentBills?.map(bill => (
                                             <tr key={bill.id}>
                                                 <td>
                                                     <input
@@ -161,37 +196,30 @@ export default function InvestorDetail() {
                                         ))}
                                     </tbody>
                                 </Table>
+                                <div className="d-flex justify-content-end">
+                                <Pagination >
+                                    {Array.from({ length: Math.ceil(investor?.bills?.length / billsPerPage) }).map((_, index) => (
+                                        <PaginationItem key={index} active={index + 1 === currentPage}>
+                                            <PaginationLink onClick={() => paginate(index + 1)}>
+                                                {index + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+                                </Pagination>
+                                </div>
                                 </div>
                                 </Card>
                                 </Card>
-                               
-                         
-                            <ButtonGroup className="my-2">
-            
+                            <CapitalCallInfo 
+                                   isOpen={modalOpen}
+                                   toggle={toggleModal}
+                                capitalData={generatedCapital}/>
 
-                            {showValidateButton && (
-                                <Button color="primary" onClick={handleValidateBills}>
-                                    Validate Bill(s)
-                                </Button>
-                            )}
-                            {hasValidatedBills && (
-                                <Button color="primary" onClick={handleGenerateCapitalCall}>
-                                    Generate Capital Call
-                                </Button>
-                            )}
-                            </ButtonGroup>
-                            {capitalDone && (
-                                <>
-                                <CapitalCallInfo capitalData={generatedCapital}/>
-                              
-                                </>
-
-                                )}
-                             
-                                  <CapitalCallList />
-
-                               
+                                        <div>
+                                        <CapitalCallList />
+                                        </div>
                         </div>
+        
                     </div>
                 </div>                                
             </div>

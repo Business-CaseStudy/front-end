@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SidebarComp from '../Navbar/SidebarComp';
-import { Button, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Button, Card, CardTitle, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
 import { createInvestor } from '../../api';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -28,8 +28,8 @@ export default function InvestorForm() {
       email: '',
       name: '',
       iban: '',
-      investment_amount: '',
-      investment_date: '',
+    //   investment_amount: '',
+    //   investment_date: '',
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -54,8 +54,13 @@ export default function InvestorForm() {
   return (
     <div style={{ display: 'flex' }}>
       <SidebarComp />
+      <div className="container">
       <div style={{ flex: 1, padding: '20px' }}>
-        <h1>Create New Investor</h1>
+      <Card>
+                                <Card body>
+                                <CardTitle tag="h5">Create New Investor</CardTitle>
+      <div style={{ flex: 1, padding: '20px' }}>
+       
         <Form onSubmit={formik.handleSubmit}>
           {error && <div style={{ color: 'red' }}>{error}</div>}
           <Row>
@@ -108,7 +113,7 @@ export default function InvestorForm() {
               <div style={{ color: 'red' }}>{formik.errors.iban}</div>
             ) : null}
           </FormGroup>
-          <FormGroup>
+          {/* <FormGroup>
             <Label for="investment_amount">Investment Amount</Label>
             <Input
               id="investment_amount"
@@ -138,11 +143,17 @@ export default function InvestorForm() {
             {formik.touched.investment_date && formik.errors.investment_date ? (
               <div style={{ color: 'red' }}>{formik.errors.investment_date}</div>
             ) : null}
-          </FormGroup>
+          </FormGroup> */}
+          <Card footer>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
+          </Card>
         </Form>
+      </div>
+      </Card>
+      </Card>
+      </div>
       </div>
     </div>
   );
