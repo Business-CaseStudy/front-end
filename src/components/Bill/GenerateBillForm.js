@@ -5,17 +5,25 @@ import { generatebill } from '../../api';  // Adjust the import path as necessar
 export default function GenerateBillForm({ isOpen, toggle, selectedInvestor, onSubmit }) {
   const [billType, setBillType] = useState('membership');
   const [amount, setAmount] = useState(null);
-
+  const [investment_amount, setInvestment_amount] = useState();
+  const [investment_date, setInvestment_date] = useState(null);
   const handleBillTypeChange = (event) => {
     setBillType(event.target.value);
   };
-
+  const handleInvAmountChange = (event) => {
+    setInvestment_amount(event.target.value);
+  };
+  const handleInvDateChange = (event) => {
+    setInvestment_date(event.target.value);
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = {
        // amount: formData.get('amount'),
         // description: formData.get('description'),
+        investment_amount:investment_amount,
+        investment_date:investment_date,
         bill_type: billType,
         fee_percentage: billType !== 'membership' ? formData.get('fee_percentage') : null,
         date: formData.get('date')
@@ -35,6 +43,37 @@ export default function GenerateBillForm({ isOpen, toggle, selectedInvestor, onS
     <ModalHeader toggle={toggle}>Generate Bill for {selectedInvestor?.name}</ModalHeader>
     <ModalBody>
       <form onSubmit={handleSubmit}>
+      <FormGroup>
+            <Label for="investment_amount">Investment Amount</Label>
+            <Input
+              id="investment_amount"
+              name="investment_amount"
+              type="number"
+              step="0.01"
+              placeholder="Investment amount"
+              value={investment_amount}
+              onChange={handleInvAmountChange}
+            //   onBlur={formik.handleBlur}
+            />
+            {/* {formik.touched.investment_amount && formik.errors.investment_amount ? (
+              <div style={{ color: 'red' }}>{formik.errors.investment_amount}</div>
+            ) : null} */}
+          </FormGroup>
+          <FormGroup>
+            <Label for="investment_date">Investment Date</Label>
+            <Input
+              id="investment_date"
+              name="investment_date"
+              type="date"
+              placeholder="Investment date placeholder"
+              value={investment_date}
+              onChange={handleInvDateChange}
+              //onBlur={handleBlur}
+            />
+            {/* {formik.touched.investment_date && formik.errors.investment_date ? (
+              <div style={{ color: 'red' }}>{formik.errors.investment_date}</div>
+            ) : null} */}
+          </FormGroup> 
         <FormGroup>
           <Label for="bill_type">Bill Type</Label>
           <Input

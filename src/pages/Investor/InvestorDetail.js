@@ -98,7 +98,10 @@ export default function InvestorDetail() {
 
     useEffect(() => {
         api.get(`/bill/investor/${id}/bills/`)
-            .then(response => setInvestor(response.data))
+            .then(response => {
+                setInvestor(response.data)
+                console.log(response.data)
+            })
             .catch(error => console.error('Error fetching investor details:', error));
     }, [id, done, capitalDone]);
 
@@ -130,8 +133,10 @@ export default function InvestorDetail() {
                             </Col>
                             <Col sm="6">
                                 <Card body>
-                                    <CardTitle tag="h5">Investment Amount</CardTitle>
-                                    {/* <CardText>{investor?.investment_amount}£</CardText> */}
+                                    <CardTitle tag="h5">Investor IBAN</CardTitle>
+                                    <CardText>{investor?.iban}
+                                        
+                                    </CardText>
                                 </Card>
                             </Col>
                         </Row>
