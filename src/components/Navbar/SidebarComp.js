@@ -24,8 +24,8 @@ export default function SidebarComp() {
           },
         }}
       >
-        <img src="ARCHIMED_LOGO_BLACK_RGB-removebg-preview.png" alt="Sidebar Image" style={{ width: '100%', height: 'auto', marginTop:"20px" }} />
-        <MenuItem component={<Link to="/" />}>
+        <img src="/ARCHIMED_LOGO_BLACK_RGB-removebg-preview.png" alt="Sidebar Image" style={{ width: '100%', height: 'auto', marginTop:"20px" }} />
+        <MenuItem>
         <FaBeer /> Dashboard </MenuItem>
         <SubMenu label="Inverstor">
           <MenuItem component={<Link to="/investor" />}> <FaRegUserCircle /> All Inverstors </MenuItem>

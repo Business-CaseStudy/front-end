@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { FaMailBulk, FaPrint } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Card, CardBody } from "reactstrap";
 import { getCapitalcallDetail } from "../../services/capitalcallApi";
+import api from "../../api";
+import { AiOutlineBackward } from "react-icons/ai";
 function PreviewPDF() {
+  const [sendEmailMessage , setSendEmailMessage] = useState("Send Email")
+  const [disableSendEmailBut , setDisableSendEmailBut] =useState(false)
   const [hideButtons, setHideButtons] = useState(false);
   const [widthPage, setWidthPage] = useState("auto");
   const { id } = useParams();
@@ -15,8 +19,21 @@ function PreviewPDF() {
       window.print();
     }, 50);
   }
+  function sendInvoice(){
+    setDisableSendEmailBut(true)
+    api.post(`/capitalcall/SendCapitalCallByMail/${id}`).then((response) => {
+     
+      setSendEmailMessage("Invoice Sended To Investor Via Mail")
+        console.log("Invoice Sended Successfuly");
+      })
+      .catch((error) =>
+        console.error("Error while sending email:", error)
+      );
+  }
   useEffect(() => {
-      getCapitalcallDetail(id).then((response) => {
+    api
+      .get(`/capitalcall/capital-call-detail/${id}/`)
+      .then((response) => {
         setCapitalCall(response.data);
         console.log(response.data);
       })
@@ -45,14 +62,14 @@ function PreviewPDF() {
                         <CardBody>
                             <div style={{ textAlign: 'center' }}>
                                 <img
-                                    src="/ARCHIMED_LOGO_BLACK_RGB-removebg-preview.png"
+                                     src="/ARCHIMED_LOGO_BLACK_RGB-removebg-preview.png"
                                     alt="Logo"
                                     style={{ width: "500px", marginBottom: "20px" }}
                                 />
                                 <div style={{ textAlign: 'center' }}>
                                     <div>IBAN: {CapitalCall?.investor.iban}</div>
                                     <div style={{ marginTop: "20px" }}>
-                                        Due Date: 2024-12-31 TODO
+                                        Due Date:  {CapitalCall?.bills[0]?.due_date}
                                     </div>
                                     <div style={{ marginTop: "20px" }}>
                                         From: Archimed SAS
@@ -69,9 +86,12 @@ function PreviewPDF() {
                                         <a href="#" className="btn btn-danger" onClick={printBill}>
                                             <FaPrint /> Print
                                         </a>
-                                        <a href="#" className="btn btn-danger" style={{ marginLeft: "10px" }} onClick={printBill}>
-                                            <FaMailBulk /> Send  Mail
-                                        </a>
+                                        <Link to={"/investordetail/"+CapitalCall?.investor.id} className="btn btn-danger" style={{ marginLeft: "10px" }} >
+                                        <AiOutlineBackward /> Back To Investor Details
+                                        </Link>
+                                        <button disabled={disableSendEmailBut}  className="btn btn-danger" style={{ marginLeft: "10px" }} onClick={sendInvoice}>
+                                            <FaMailBulk /> {sendEmailMessage}
+                                        </button>
                                     </div>
                                 )}
                             </div>

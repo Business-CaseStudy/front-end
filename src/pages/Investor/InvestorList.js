@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, CardTitle, CardBody, CardFooter, Input } from 'reactstrap';
 import SidebarComp from '../../components/Navbar/SidebarComp';
 import GenerateBillForm from '../../components/Bill/GenerateBillForm';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { RiAiGenerate } from 'react-icons/ri';
 import { getInvestor } from '../../services/investorApi';
 
@@ -105,9 +105,11 @@ export default function InvestorList() {
                                                         />
                                                     </td>
                                                     <td>
-                                                        <Button color="link" onClick={() => handleUsernameClick(investor.id)}>
+                                                        <Link color="link" 
+                                                        //onClick={() => handleUsernameClick(investor.id)}
+                                                        to={"/investordetail/"+investor.id}>
                                                             {investor.name}
-                                                        </Button>
+                                                        </Link>
                                                     </td>
                                                     <td>{investor.email}</td>
                                                     <td>{investor.iban}</td>

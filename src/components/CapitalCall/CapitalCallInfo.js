@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { FiSend } from 'react-icons/fi'
-import { Button, Card, CardBody, CardText, CardTitle, Modal, ModalBody, ModalFooter } from 'reactstrap'
 import { Link } from 'react-router-dom'
+import { Button, Card, CardBody, CardText, CardTitle, Modal, ModalBody, ModalFooter } from 'reactstrap'
+
 export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
     useEffect(() => {
         console.log("__capitalcall",capitalData)
@@ -46,7 +47,7 @@ export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
       </Row>
       <Row  className="justify-content-md-center">
         <Col xs lg="auto">TOTAL AMOUNT</Col>
-        <Col md="auto"> {capitalData?.total_amount} £</Col>
+        <Col md="auto"> {capitalData?.total_amount} Â£</Col>
       </Row>
       <Row  className="justify-content-md-center">
         <Col xs lg="auto">DATE</Col>
