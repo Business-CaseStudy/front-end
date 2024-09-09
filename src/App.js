@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import GenerateBillForm from './components/Bill/GenerateBillForm';
 import BillList from './pages/Bill/BillList';
 import InvestorDetail from './pages/Investor/InvestorDetail';
-
+import PreviewPDF from './components/Bill/PreviewPDF';
 function App() {
   return (
   <>
@@ -22,6 +22,7 @@ function App() {
   <Route path="/" element={<Home />}>
   
   </Route>
+  <Route path="/previewcapitalCall/:id" element={<PreviewPDF />}></Route>
   <Route path="/investor" element={<InvestorList />}></Route>
   <Route path="/newinvestor" element={<InvestorForm />}></Route>
   {/* InvestorDetail */}

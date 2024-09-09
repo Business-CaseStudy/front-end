@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Card, CardTitle, Table } from 'react-bootstrap'
-import {  useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Card, CardTitle, Table, Pagination } from 'react-bootstrap';
+import { Link, useParams } from 'react-router-dom';
 import api from '../../api';
 import { FaEdit } from 'react-icons/fa';
 import { Badge, Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { FiSend } from 'react-icons/fi';
+import { VscPreview } from 'react-icons/vsc';
+import { getCapitalcallDetail, updateCapitalcallStatus } from '../../services/capitalcallApi';
 
 const getStatusColor2 = (status) => {
     switch (status) {
@@ -20,12 +22,17 @@ const getStatusColor2 = (status) => {
             return 'danger'; // Grey badge for any other status
     }
 };
-export default function CapitalCallList({refreshTrigger,loadCapital }) {
+
+export default function CapitalCallList({ refreshTrigger, loadCapital }) {
     const [capitalcalls, setCapitalcalls] = useState([]);
     const [selectedCapitalCall, setSelectedCapitalCall] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const { id } = useParams();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4; 
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -36,109 +43,121 @@ export default function CapitalCallList({refreshTrigger,loadCapital }) {
         toggleModal();
     };
 
-
     useEffect(() => {
-        api.get(`/capitalcall/capital-calls/${id}/`)
-            .then(response => { 
-                console.log(response.data)
+        getCapitalcallDetail(id).then(response => { 
+                console.log(response.data);
                 setCapitalcalls(response.data);
             })
             .catch(error => console.error('Error fetching investors:', error));
-    }, [isModalOpen,loadCapital]);
+    }, [ loadCapital]);
+
     const handleStatusChange = (e) => {
         setSelectedCapitalCall({ ...selectedCapitalCall, status: e.target.value });
     };
 
     const saveStatusChange = () => {
         if (selectedCapitalCall) {
-            api.post(`/capitalcall/capitalcall/${selectedCapitalCall.id}/update-status/`, { status: selectedCapitalCall.status })
+            updateCapitalcallStatus(selectedCapitalCall.id, { status: selectedCapitalCall.status })
                 .then(response => {
-                    
                     setCapitalcalls(capitalcalls.map(cc => cc.id === selectedCapitalCall.id ? { ...cc, status: selectedCapitalCall.status } : cc));
                     toggleModal();
                 })
                 .catch(error => console.error('Error updating capital call status:', error));
         }
     };
-  return (
-    <>
-<Card>
 
-    <Card.Body>
-        <CardTitle>Capital Call List</CardTitle>
-    {capitalcalls &&(
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentCapitalCalls = capitalcalls.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(capitalcalls.length / itemsPerPage);
 
-<div className="table-responsive">
-    <Table bordered className="text-center">
-        <thead>
-            <tr>
-                {/* <th className="align-middle">Select</th> */}
-                <th className="align-middle">Reference</th>
-                <th className="align-middle">total amount</th>
-                <th className="align-middle">capital call STATUS</th>
-                <th className="align-middle">Bills</th>
-                <th className="align-middle">CREATED DATE</th>
-                <th className="align-middle">CHANGE STATUS</th>
-                <th className="align-middle">SEND EMAIL</th>
-            </tr>
-        </thead>
-        <tbody>
-            {capitalcalls?.map(data => (
-                <tr key={data.id}>
-                   
-                    <th scope="row">{data.id}</th>
-                    <td>{data.total_amount}</td>
-                   
-                    <td>
-                    <Badge color={getStatusColor2(data.status)} pill>
-                        {data.status}
-                    </Badge>
-                    
-                    </td>
-                    <td>
-                              <Table border="1" cellPadding="5"  className="text-center">
-                                  <thead>
-                                      <tr>
-                                          <th>Bill ID</th>
-                                          <th>Bill Type</th>
-                                          <th>Bill Status</th>
-                                          <th>Amount</th>
-                                          <th>Due Date</th>
-                                          <th>Created Date</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      {data.bills.map(bill => (
-                                          <tr key={bill.id}>
-                                              <td>{bill.id}</td>
-                                              <td>{bill.bill_type}</td>
-                                              <td>
-                                              <Badge color={getStatusColor2(bill.bill_status)} pill>
-                                              {bill.bill_status}       
-                                              </Badge>
-                    
-                                                </td>
-                                              <td>{bill.amount}</td>
-                                              <td>{bill.due_date}</td>
-                                            <td>{bill.created_date.split('T')[0]}</td>
+    const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-                                          </tr>
-                                      ))}
-                                  </tbody>
-                              </Table>
-                          </td>
-                    <td>{data.created_date.split('T')[0]}</td>
-                    <td onClick={() => openEditModal(data)} style={{ cursor: 'pointer' }}>
+    return (
+        <>
+            <Card>
+                <Card.Body>
+                    <CardTitle>Capital Call List</CardTitle>
+                    {capitalcalls && (
+                        <div className="table-responsive">
+                            <Table bordered className="text-center">
+                                <thead>
+                                    <tr>
+                                        <th className="align-middle">Reference</th>
+                                        <th className="align-middle">Total Amount</th>
+                                        <th className="align-middle">Capital Call Status</th>
+                                        <th className="align-middle">Bills</th>
+                                        <th className="align-middle">Created Date</th>
+                                        <th className="align-middle">Change Status</th>
+                                        <th className="align-middle">Preview Capital call</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentCapitalCalls.map(data => (
+                                        <tr key={data.id}>
+                                            <th scope="row">{data.id}</th>
+                                            <td>{data.total_amount}</td>
+                                            <td>
+                                                <Badge color={getStatusColor2(data.status)} pill>
+                                                    {data.status}
+                                                </Badge>
+                                            </td>
+                                            <td>
+                                                <Table border="1" cellPadding="5" className="text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Bill ID</th>
+                                                            <th>Bill Type</th>
+                                                            <th>Bill Status</th>
+                                                            <th>Amount</th>
+                                                            <th>Due Date</th>
+                                                            <th>Created Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {data.bills.map(bill => (
+                                                            <tr key={bill.id}>
+                                                                <td>{bill.id}</td>
+                                                                <td>{bill.bill_type}</td>
+                                                                <td>
+                                                                    <Badge color={getStatusColor2(bill.bill_status)} pill>
+                                                                        {bill.bill_status}
+                                                                    </Badge>
+                                                                </td>
+                                                                <td>{bill.amount}</td>
+                                                                <td>{bill.due_date}</td>
+                                                                <td>{bill.created_date.split('T')[0]}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
+                                            </td>
+                                            <td>{data.created_date.split('T')[0]}</td>
+                                            <td onClick={() => openEditModal(data)} style={{ cursor: 'pointer' }}>
                                                 <FaEdit />
-                    </td>
-                    <td>
-                    <FiSend />
-                    </td>
-                </tr>
-            ))}
-        </tbody>
-    </Table>
-    {selectedCapitalCall && (
+                                            </td>
+                                            <td>
+                                            <Link  to={"/previewcapitalCall/"+data?.id} ><VscPreview /></Link>
+                                              
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                            <div className="d-flex justify-content-end">
+                            <Pagination>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
+                                        {i + 1}
+                                    </Pagination.Item>
+                                ))}
+                            </Pagination>
+                            </div>
+                        </div>
+                    )}
+                </Card.Body>
+            </Card>
+            {selectedCapitalCall && (
                 <Modal isOpen={isModalOpen} toggle={toggleModal}>
                     <ModalHeader toggle={toggleModal}>Edit Capital Call Status</ModalHeader>
                     <ModalBody>
@@ -166,15 +185,6 @@ export default function CapitalCallList({refreshTrigger,loadCapital }) {
                     </ModalFooter>
                 </Modal>
             )}
-</div>
-
-  )}
-    </Card.Body>
-
-</Card>
- 
-  
-    </>
-
-  )
+        </>
+    );
 }

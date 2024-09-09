@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import SidebarComp from '../Navbar/SidebarComp';
 import { Button, Card, CardTitle, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
-import { createInvestor } from '../../api';
+// import { createInvestor } from '../../api';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
-
+import InputMask from 'react-input-mask'; // Import InputMask
+import { createInvestor } from '../../services/investorApi';
 // Validation Schema with Yup
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required('Required'),
   name: Yup.string().required('Required'),
   iban: Yup.string().required('Required'),
-  investment_amount: Yup.number()
-    .typeError('Must be a number')
-    .required('Required')
-    .positive('Must be positive')
-    .test('decimal', 'Must be a valid decimal', value => value === undefined || /^[0-9]+(\.[0-9]{1,2})?$/.test(value)),
-  investment_date: Yup.date().required('Required'),
+//   investment_amount: Yup.number()
+//     .typeError('Must be a number')
+//     .required('Required')
+//     .positive('Must be positive')
+//     .test('decimal', 'Must be a valid decimal', value => value === undefined || /^[0-9]+(\.[0-9]{1,2})?$/.test(value)),
+//   investment_date: Yup.date().required('Required'),
 });
 
 export default function InvestorForm() {
@@ -28,8 +29,7 @@ export default function InvestorForm() {
       email: '',
       name: '',
       iban: '',
-    //   investment_amount: '',
-    //   investment_date: '',
+
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -43,8 +43,15 @@ export default function InvestorForm() {
       } catch (err) {
         // Handle error
         console.error('Error creating investor:', err);
-        setError('Failed to create investor. Please try again.');
-        toast.error('Failed to create investor. Please try again.');
+        console.error(err?.response?.data?.iban[0])
+        if(err?.response?.data?.iban[0]){
+            setError(err?.response?.data?.iban[0]);
+            toast.error(err?.response?.data?.iban[0]);
+        }else {
+            setError('Failed to create investor. Please try again.');
+            toast.error('Failed to create investor. Please try again.');
+        }
+      
       } finally {
         setIsSubmitting(false);
       }
@@ -109,41 +116,12 @@ export default function InvestorForm() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+       
             {formik.touched.iban && formik.errors.iban ? (
               <div style={{ color: 'red' }}>{formik.errors.iban}</div>
             ) : null}
           </FormGroup>
-          {/* <FormGroup>
-            <Label for="investment_amount">Investment Amount</Label>
-            <Input
-              id="investment_amount"
-              name="investment_amount"
-              type="number"
-              step="0.01"
-              placeholder="Investment amount"
-              value={formik.values.investment_amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.investment_amount && formik.errors.investment_amount ? (
-              <div style={{ color: 'red' }}>{formik.errors.investment_amount}</div>
-            ) : null}
-          </FormGroup>
-          <FormGroup>
-            <Label for="investment_date">Investment Date</Label>
-            <Input
-              id="investment_date"
-              name="investment_date"
-              type="date"
-              placeholder="Investment date placeholder"
-              value={formik.values.investment_date}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.investment_date && formik.errors.investment_date ? (
-              <div style={{ color: 'red' }}>{formik.errors.investment_date}</div>
-            ) : null}
-          </FormGroup> */}
+         
           <Card footer>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Submit'}

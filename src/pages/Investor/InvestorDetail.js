@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Badge, Button, Card, CardText, CardTitle, Col, Row, Table, Alert, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SidebarComp from '../../components/Navbar/SidebarComp';
 import { useParams } from 'react-router-dom';
-import api from '../../api';
 import { ButtonGroup } from 'react-bootstrap';
 import CapitalCallInfo from '../../components/CapitalCall/CapitalCallInfo';
 import CapitalCallList from '../../components/CapitalCall/CapitalCallList';
 import { RiAiGenerate } from 'react-icons/ri';
+import { getBillDetails, validateBill } from '../../services/billApi';
+import { generateCapitalcall } from '../../services/capitalcallApi';
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -34,7 +35,7 @@ export default function InvestorDetail() {
     const [capitalDone, setCapitalDone] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [billsPerPage] = useState(10); // Number of bills per page
+    const [billsPerPage] = useState(10); 
 
     const toggleModal = () => {
         setModalOpen(!modalOpen);
@@ -54,8 +55,7 @@ export default function InvestorDetail() {
     const handleValidateBills = () => {
         const billIds = selectedBills.map(bill => bill.id);
         setDone(false);
-        api.post('/bill/validate-bill/', { bill_ids: billIds })
-            .then(response => {
+        validateBill({ bill_ids: billIds }).then(response => {
                 setAlert({ type: 'success', message: 'Bills validated successfully!' });
                 setInvestor({
                     ...investor,
@@ -82,7 +82,7 @@ export default function InvestorDetail() {
         try {
             console.log('Generating capital call for bills:', selectedBills);
             const billIds = selectedBills.map(bill => bill.id);
-            const response = await api.post(`/capitalcall/generate-capital-call/${id}/`, { bill_ids: billIds });
+            const response = await generateCapitalcall(id, { bill_ids: billIds });
             console.log(response.data);
             setGeneratedCapital(response.data);
             setCapitalDone(true);
@@ -97,7 +97,7 @@ export default function InvestorDetail() {
     };
 
     useEffect(() => {
-        api.get(`/bill/investor/${id}/bills/`)
+        getBillDetails(id)
             .then(response => {
                 setInvestor(response.data)
                 console.log(response.data)

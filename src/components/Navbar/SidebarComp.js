@@ -1,5 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaBeer, FaFileInvoiceDollar, FaRegUserCircle, FaUserPlus } from 'react-icons/fa';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link } from 'react-router-dom';
@@ -9,10 +8,10 @@ export default function SidebarComp() {
     <Sidebar
     style={{
       backgroundColor: '#3d0568',
-      height: '100vh',    // Prend toute la hauteur de la page
-      width: '250px',     // Définir la largeur du sidebar
-      position: 'sticky', // Rendre le sidebar sticky
-      top: '0',           // Sticky à partir du haut de la page
+      height: '100vh',    
+      width: '250px',    
+      position: 'sticky', 
+      top: '0',           
     }}
   >
       <Menu
@@ -20,7 +19,7 @@ export default function SidebarComp() {
           button: {
             [`&.active`]: {
               backgroundColor: '#3d0568',
-              color: '#3d0568',
+              color: '#3d0578',
             },
           },
         }}
@@ -38,8 +37,13 @@ export default function SidebarComp() {
 
         
         </SubMenu>
-   
-        <MenuItem> Capital Call </MenuItem>
+        
+        {/* <SubMenu label="Capital Call">     
+        <MenuItem component={<Link to="/bill" />}> <RiBillLine /> Capital Call  </MenuItem>
+
+        
+        </SubMenu> */}
+      
       </Menu>
     </Sidebar>
   );

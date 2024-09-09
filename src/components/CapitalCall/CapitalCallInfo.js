@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { FiSend } from 'react-icons/fi'
 import { Button, Card, CardBody, CardText, CardTitle, Modal, ModalBody, ModalFooter } from 'reactstrap'
-
+import { Link } from 'react-router-dom'
 export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
     useEffect(() => {
         console.log("__capitalcall",capitalData)
@@ -20,7 +20,7 @@ export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
         Capital Call 
       </CardTitle>
       <CardText>
-        {/* This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer. */}
+      
       </CardText>
       <CardText>
     <Container>
@@ -59,7 +59,7 @@ export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
   </Card>
   </ModalBody>
   <ModalFooter>
-          <Button type="submit" color="primary"><FiSend />Send</Button>
+  <Link  to={"/previewcapitalCall/"+capitalData?.id} className="btn btn-primary"><FiSend />Preview</Link>
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
   </Modal>
