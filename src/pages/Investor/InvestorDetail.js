@@ -135,7 +135,7 @@ export default function InvestorDetail() {
                                 <Card body>
                                     <CardTitle tag="h5">Investor IBAN</CardTitle>
                                     <CardText>{investor?.iban}
-                                        
+
                                     </CardText>
                                 </Card>
                             </Col>
@@ -221,7 +221,7 @@ export default function InvestorDetail() {
                                 capitalData={generatedCapital}/>
 
                                         <div>
-                                        <CapitalCallList />
+                                        <CapitalCallList loadCapital={capitalDone}/>
                                         </div>
                         </div>
         

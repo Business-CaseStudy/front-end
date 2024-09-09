@@ -71,7 +71,7 @@ export default function InvestorList() {
                                     <tr key={investor.id}>
                                       <td>
                             <input
-                                type="radio"
+                                type="checkbox"
                                 name="investor"
                                 value={investor.id}
                                 checked={selectedInvestor?.id === investor.id}

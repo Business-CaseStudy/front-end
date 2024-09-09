@@ -20,7 +20,7 @@ const getStatusColor2 = (status) => {
             return 'danger'; // Grey badge for any other status
     }
 };
-export default function CapitalCallList({refreshTrigger }) {
+export default function CapitalCallList({refreshTrigger,loadCapital }) {
     const [capitalcalls, setCapitalcalls] = useState([]);
     const [selectedCapitalCall, setSelectedCapitalCall] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -44,7 +44,7 @@ export default function CapitalCallList({refreshTrigger }) {
                 setCapitalcalls(response.data);
             })
             .catch(error => console.error('Error fetching investors:', error));
-    }, []);
+    }, [isModalOpen,loadCapital]);
     const handleStatusChange = (e) => {
         setSelectedCapitalCall({ ...selectedCapitalCall, status: e.target.value });
     };
