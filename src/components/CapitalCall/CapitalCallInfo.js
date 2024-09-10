@@ -30,8 +30,8 @@ export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
         <Col md="auto"> {capitalData?.investor_iban}</Col>
       </Row>
       <Row  className="justify-content-md-center">
-        <Col xs lg="auto">DUE DATE</Col>
-        <Col md="auto"> {capitalData?.investor_iban}</Col>
+        {/* <Col xs lg="auto">DUE DATE</Col>
+        <Col md="auto"> {capitalData?.investor_iban}</Col> */}
       </Row>
       <Row  className="justify-content-md-center">
         <Col xs lg="auto">From</Col>
@@ -47,11 +47,11 @@ export default function CapitalCallInfo({isOpen, toggle, capitalData}) {
       </Row>
       <Row  className="justify-content-md-center">
         <Col xs lg="auto">TOTAL AMOUNT</Col>
-        <Col md="auto"> {capitalData?.total_amount} Â£</Col>
+        <Col md="auto"> {capitalData?.total_amount} EURO</Col>
       </Row>
       <Row  className="justify-content-md-center">
         <Col xs lg="auto">DATE</Col>
-        <Col md="auto"> {capitalData?.Date}</Col>
+        <Col md="auto"> {capitalData?.Date.split('T')[0]}</Col>
       </Row>
     </Container>
       </CardText>

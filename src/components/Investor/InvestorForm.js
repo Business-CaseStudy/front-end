@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import SidebarComp from '../Navbar/SidebarComp';
 import { Button, Card, CardTitle, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
-// import { createInvestor } from '../../api';
+
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
-import InputMask from 'react-input-mask'; // Import InputMask
+
 import { createInvestor } from '../../services/investorApi';
-// Validation Schema with Yup
+
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required('Required'),
   name: Yup.string().required('Required'),
@@ -38,10 +38,8 @@ export default function InvestorForm() {
       try {
         await createInvestor(values);
         toast.success('Investor created successfully');
-        // Reset the form
         resetForm();
       } catch (err) {
-        // Handle error
         console.error('Error creating investor:', err);
         console.error(err?.response?.data?.iban[0])
         if(err?.response?.data?.iban[0]){

@@ -11,15 +11,15 @@ import { getCapitalcallDetail, updateCapitalcallStatus } from '../../services/ca
 const getStatusColor2 = (status) => {
     switch (status) {
         case 'pending':
-            return 'warning'; // Yellow badge
+            return 'warning'; 
         case 'validated':
-            return 'success'; // Green badge
+            return 'success'; 
         case 'paid':
-            return 'primary'; // Blue badge
+            return 'primary'; 
         case 'sent':
-            return 'secondary'; // Blue badge
+            return 'secondary'; 
         default:
-            return 'danger'; // Grey badge for any other status
+            return 'danger'; 
     }
 };
 

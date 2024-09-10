@@ -106,7 +106,6 @@ export default function InvestorList() {
                                                     </td>
                                                     <td>
                                                         <Link color="link" 
-                                                        //onClick={() => handleUsernameClick(investor.id)}
                                                         to={"/investordetail/"+investor.id}>
                                                             {investor.name}
                                                         </Link>
